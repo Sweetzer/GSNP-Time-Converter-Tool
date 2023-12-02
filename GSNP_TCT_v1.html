@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Converter</title>
+    <style>
+        /* Add your custom CSS styles here */
+    </style>
+</head>
+<body>
+    <h1>Time Converter</h1>
+    <label for="earthTime">Enter Earth Time (YYYY-MM-DD HH:mm:ss)</label>
+    <input type="text" id="earthTime" placeholder="YYYY-MM-DD HH:mm:ss">
+    <button onclick="convertTime()">Convert</button>
+
+    <h2>Converted Time</h2>
+    <p>Mission Timecode: <span id="missionTimecode"></span></p>
+    <p>SimTime: <span id="simTime"></span></p>
+
+    <script>
+        function calculateMissionTimecode(earthTime) {
+            // Define the launch date as February 16, 2150
+            const launchDate = new Date("2150-02-16T00:00:00");
+
+            // Calculate the time difference in seconds
+            const timeDifferenceSeconds = Math.floor((earthTime - launchDate) / 1000);
+
+            // Calculate the components of Mission Timecode
+            const kils = Math.floor(timeDifferenceSeconds / 3600000);
+            const hects = Math.floor((timeDifferenceSeconds % 3600000) / 36000);
+            const decs = Math.floor((timeDifferenceSeconds % 36000) / 3600);
+            const hours = Math.floor((timeDifferenceSeconds % 3600) / 60);
+            const minutes = Math.floor((timeDifferenceSeconds % 60));
+            const seconds = earthTime.getSeconds();
+
+            return `MT ${kils}:${hects}:${decs}:${hours}:${minutes}:${seconds}`;
+        }
+
+        function calculateSimTime(earthTime) {
+            // Define the SimTime months and their respective day counts
+            const simTimeMonths = [
+                { name: "January", days: 20 },
+                { name: "February", days: 45 },
+                { name: "March", days: 36 },
+                { name: "March2", days: 36 },
+                { name: "April", days: 17 },
+                { name: "May", days: 20 },
+                { name: "June", days: 45 },
+                { name: "July", days: 36 },
+                { name: "August", days: 17 },
+                { name: "September", days: 20 },
+                { name: "Johnbruary", days: 45 },
+                { name: "October", days: 36 },
+                { name: "November", days: 17 },
+                { name: "December", days: 64 }
+            ];
+
+            const earthYear = earthTime.getFullYear();
+            const earthMonth = earthTime.getMonth();
+            const earthDate = earthTime.getDate();
+
+            // Calculate SimTime month and day
+            let simTimeMonth = 0;
+            let simTimeDay = 0;
+
+            for (let i = 0; i < earthMonth; i++) {
+                simTimeDay += simTimeMonths[i].days;
+            }
+
+            simTimeMonth = simTimeMonths[earthMonth].name;
+            simTimeDay += earthDate;
+
+            // Calculate SimTime year
+            const simTimeYear = earthYear + 111;
+
+            // Calculate SimTime time (hours and minutes)
+            const simTimeHours = earthTime.getHours();
+            const simTimeMinutes = earthTime.getMinutes();
+
+            return `${simTimeMonth} ${simTimeDay} ${simTimeHours}:${simTimeMinutes} ${simTimeYear}`;
+        }
+
+        function convertTime() {
+            const earthTimeInput = document.getElementById('earthTime').value;
+            const earthTime = new Date(earthTimeInput);
+            
+            // Calculate Mission Timecode
+            const missionTimecode = calculateMissionTimecode(earthTime);
+
+            // Calculate SimTime
+            const simTime = calculateSimTime(earthTime);
+
+            document.getElementById('missionTimecode').textContent = missionTimecode;
+            document.getElementById('simTime').textContent = simTime;
+        }
+    </script>
+</body>
+</html>
