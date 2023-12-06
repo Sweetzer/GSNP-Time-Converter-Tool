@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genship New Phoenix Time Converter</title>
+    <style>
+        .container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Genship New Phoenix Time Converter</h1>
+        
+        <!-- Launch Date Information -->
+        <p><strong>GNP Launch Date:</strong> February 23rd, 2150, 20:03:23</p>
+
+        <!-- Earth Date inputs -->
+        <h2>Earth Date</h2>
+        <label for="earthYear">Year:</label>
+        <input type="number" id="earthYear" min="0" value="2261">
+        <label for="earthMonth">Month:</label>
+        <input type="number" id="earthMonth" min="1" max="12" value="2">
+        <label for="earthDay">Day:</label>
+        <input type="number" id="earthDay" min="1" max="31" value="24">
+        <label for="earthHour">Hour:</label>
+        <input type="number" id="earthHour" min="0" max="23" value="12">
+        <label for="earthMinute">Minute:</label>
+        <input type="number" id="earthMinute" min="0" max="59" value="23">
+        <label for="earthSecond">Second:</label>
+        <input type="number" id="earthSecond" min="0" max="59" value="46">
+        
+        <!-- Mission Timecode inputs -->
+        <h2>Mission Timecode</h2>
+        <label for="missionMyri">Myri:</label>
+        <input type="number" id="missionMyri" min="0" placeholder="Enter Myri">
+        <label for="missionKils">Kils:</label>
+        <input type="number" id="missionKils" min="0" placeholder="Enter Kils">
+        <label for="missionHects">Hects:</label>
+        <input type="number" id="missionHects" min="0" placeholder="Enter Hects">
+        <label for="missionDecs">Decs:</label>
+        <input type="number" id="missionDecs" min="0" placeholder="Enter Decs">
+        <label for="missionHours">Hours:</label>
+        <input type="number" id="missionHours" min="0" max="99" placeholder="Enter Hours">
+        <label for="missionMinutes">Minutes:</label>
+        <input type="number" id="missionMinutes" min="0" max="59" placeholder="Enter Minutes">
+        <label for="missionSeconds">Seconds:</label>
+        <input type="number" id="missionSeconds" min="0" max="59" placeholder="Enter Seconds">
+        
+        <!-- New Single-string Mission Timecode input -->
+        <h2>Mission Timecode String</h2>
+        <label for="missionTimecodeString">MT:</label>
+        <input type="text" id="missionTimecodeString" placeholder="Enter Timecode e.g., 97:02:07:04:01:45:36">
+
+        <!-- Total Hours Since Launch input -->
+        <h2>Total Hours Since Launch</h2>
+        <label for="totalHours">Total Hours:</label>
+        <input type="number" id="totalHours" min="0" value="972741.76">
+        
+        <!-- Calculations -->
+        <h2>Calculations</h2>
+        <div>
+            <h3>Total Hours Since Launch:</h3>
+            <p id="totalHoursResultCalc"></p>
+        </div>
+        <div>
+            <h3>Mission Timecode:</h3>
+            <p id="missionTimecodeResultCalc"></p>
+        </div>
+        <div>
+            <h3>Earth Date:</h3>
+            <p id="earthDateResultCalc"></p>
+        </div>
+    </div>
+
+    <script>
+        const launchDate = new Date(2150, 1, 23, 20, 3, 23); // February 23rd, 2150, 20:03:23
+
+        function getTotalHoursFromEarthDate() {
+            const year = parseInt(document.getElementById("earthYear").value) || 0;
+            const month = parseInt(document.getElementById("earthMonth").value) || 0;
+            const day = parseInt(document.getElementById("earthDay").value) || 0;
+            const hour = parseInt(document.getElementById("earthHour").value) || 0;
+            const minute = parseInt(document.getElementById("earthMinute").value) || 0;
+            const second = parseInt(document.getElementById("earthSecond").value) || 0;
+
+            const earthDate = new Date(year, month - 1, day, hour, minute, second);
+            return (earthDate - launchDate) / (1000 * 60 * 60);
+        }
+
+        function getTotalHoursFromMissionTimecode() {
+            const myri = parseInt(document.getElementById("missionMyri").value) || 0;
+            const kils = parseInt(document.getElementById("missionKils").value) || 0;
+            const hects = parseInt(document.getElementById("missionHects").value) || 0;
+            const decs = parseInt(document.getElementById("missionDecs").value) || 0;
+            const hours = parseInt(document.getElementById("missionHours").value) || 0;
+            const minutes = parseInt(document.getElementById("missionMinutes").value) || 0;
+            const seconds = parseInt(document.getElementById("missionSeconds").value) || 0;
+
+            return (myri * 10000) + (kils * 1000) + (hects * 100) +
+                (decs * 10) + hours + (minutes / 60) + (seconds / 3600);
+        }
+
+        function getTotalHoursFromMissionTimecodeString() {
+            const timecodeStr = document.getElementById("missionTimecodeString").value;
+            const parts = timecodeStr.split(':').map(part => parseInt(part, 10) || 0);
+            return (parts[0] * 10000) + (parts[1] * 1000) + (parts[2] * 100) + 
+                   (parts[3] * 10) + parts[4] + (parts[5] / 60) + (parts[6] / 3600);
+        }
+
+        function getEarthDateFromTotalHours(totalHours) {
+            return new Date(launchDate.getTime() + totalHours * 60 * 60 * 1000);
+        }
+
+        function getMissionTimecodeFromTotalHours(totalHours) {
+            const myri = Math.floor(totalHours / 10000);
+            const kils = Math.floor((totalHours % 10000) / 1000);
+            const hects = Math.floor((totalHours % 1000) / 100);
+            const decs = Math.floor((totalHours % 100) / 10);
+            const hours = Math.floor(totalHours % 10);
+            const minutes = Math.floor((totalHours % 1) * 60);
+            const seconds = Math.round(((totalHours % 1) * 60 - minutes) * 60);
+
+            return { myri, kils, hects, decs, hours, minutes, seconds };
+        }
+
+        function formatTimecodeComponent(component) {
+            return component.toString().padStart(2, '0');
+        }
+
+        function updateCalculations() {
+            let totalHours;
+
+            if (document.activeElement.id.startsWith("earth")) {
+                totalHours = getTotalHoursFromEarthDate();
+            } else if (document.activeElement.id === "missionTimecodeString") {
+                totalHours = getTotalHoursFromMissionTimecodeString();
+            } else {
+                totalHours = parseFloat(document.getElementById("totalHours").value) || 0;
+            }
+
+            const earthDate = getEarthDateFromTotalHours(totalHours);
+            const missionTimecode = getMissionTimecodeFromTotalHours(totalHours);
+
+            // Update Mission Timecode inputs
+            document.getElementById("missionMyri").value = formatTimecodeComponent(missionTimecode.myri);
+            document.getElementById("missionKils").value = formatTimecodeComponent(missionTimecode.kils);
+            document.getElementById("missionHects").value = formatTimecodeComponent(missionTimecode.hects);
+            document.getElementById("missionDecs").value = formatTimecodeComponent(missionTimecode.decs);
+            document.getElementById("missionHours").value = formatTimecodeComponent(missionTimecode.hours);
+            document.getElementById("missionMinutes").value = formatTimecodeComponent(missionTimecode.minutes);
+            document.getElementById("missionSeconds").value = formatTimecodeComponent(missionTimecode.seconds);
+
+
+            // Update Calculations display
+            document.getElementById("totalHoursResultCalc").textContent = `Total Hours Since Launch: ${totalHours.toFixed(2)}`;
+            document.getElementById("missionTimecodeResultCalc").textContent = `Mission Timecode: MT: ${formatTimecodeComponent(missionTimecode.myri)}:${formatTimecodeComponent(missionTimecode.kils)}:${formatTimecodeComponent(missionTimecode.hects)}:${formatTimecodeComponent(missionTimecode.decs)}:${formatTimecodeComponent(missionTimecode.hours)}:${formatTimecodeComponent(missionTimecode.minutes)}:${formatTimecodeComponent(missionTimecode.seconds)}`;
+            document.getElementById("earthDateResultCalc").textContent = `Earth Date: ${earthDate.toLocaleString()}`;
+
+
+            // Update Total Hours input
+            document.getElementById("totalHours").value = totalHours.toFixed(2);
+
+            // Update the single-string Mission Timecode input
+            document.getElementById("missionTimecodeString").value = 
+                `${formatTimecodeComponent(missionTimecode.myri)}:${formatTimecodeComponent(missionTimecode.kils)}:${formatTimecodeComponent(missionTimecode.hects)}:${formatTimecodeComponent(missionTimecode.decs)}:${formatTimecodeComponent(missionTimecode.hours)}:${formatTimecodeComponent(missionTimecode.minutes)}:${formatTimecodeComponent(missionTimecode.seconds)}`;
+        }
+
+        // Add event listeners to all input fields to update calculations
+        document.querySelectorAll("input").forEach(input => {
+            input.addEventListener("input", updateCalculations);
+        });
+
+        // Initial calculation on page load
+        updateCalculations();
+    </script>
+</body>
+</html>
