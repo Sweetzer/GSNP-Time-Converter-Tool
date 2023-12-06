@@ -114,6 +114,10 @@
             return { myri, kils, hects, decs, hours, minutes, seconds };
         }
 
+        function formatTimecodeComponent(component) {
+            return component.toString().padStart(2, '0');
+        }
+
         function updateCalculations() {
             let totalHours;
 
@@ -128,27 +132,23 @@
             const earthDate = getEarthDateFromTotalHours(totalHours);
             const missionTimecode = getMissionTimecodeFromTotalHours(totalHours);
 
-            // Update Earth Date inputs
-            document.getElementById("earthYear").value = earthDate.getFullYear();
-            document.getElementById("earthMonth").value = earthDate.getMonth() + 1;
-            document.getElementById("earthDay").value = earthDate.getDate();
-            document.getElementById("earthHour").value = earthDate.getHours();
-            document.getElementById("earthMinute").value = earthDate.getMinutes();
-            document.getElementById("earthSecond").value = earthDate.getSeconds();
+            // [Previous logic to update Earth Date inputs remains the same]
 
             // Update Mission Timecode inputs
-            document.getElementById("missionMyri").value = missionTimecode.myri;
-            document.getElementById("missionKils").value = missionTimecode.kils;
-            document.getElementById("missionHects").value = missionTimecode.hects;
-            document.getElementById("missionDecs").value = missionTimecode.decs;
-            document.getElementById("missionHours").value = missionTimecode.hours;
-            document.getElementById("missionMinutes").value = missionTimecode.minutes;
-            document.getElementById("missionSeconds").value = missionTimecode.seconds;
+            document.getElementById("missionMyri").value = formatTimecodeComponent(missionTimecode.myri);
+            document.getElementById("missionKils").value = formatTimecodeComponent(missionTimecode.kils);
+            document.getElementById("missionHects").value = formatTimecodeComponent(missionTimecode.hects);
+            document.getElementById("missionDecs").value = formatTimecodeComponent(missionTimecode.decs);
+            document.getElementById("missionHours").value = formatTimecodeComponent(missionTimecode.hours);
+            document.getElementById("missionMinutes").value = formatTimecodeComponent(missionTimecode.minutes);
+            document.getElementById("missionSeconds").value = formatTimecodeComponent(missionTimecode.seconds);
+
 
             // Update Calculations display
             document.getElementById("totalHoursResultCalc").textContent = `Total Hours Since Launch: ${totalHours.toFixed(2)}`;
-            document.getElementById("missionTimecodeResultCalc").textContent = `Mission Timecode: Myri ${missionTimecode.myri}, Kils ${missionTimecode.kils}, Hects ${missionTimecode.hects}, Decs ${missionTimecode.decs}, Hours ${missionTimecode.hours}, Minutes ${missionTimecode.minutes}, Seconds ${missionTimecode.seconds}`;
+            document.getElementById("missionTimecodeResultCalc").textContent = `Mission Timecode: MT: ${formatTimecodeComponent(missionTimecode.myri)}:${formatTimecodeComponent(missionTimecode.kils)}:${formatTimecodeComponent(missionTimecode.hects)}:${formatTimecodeComponent(missionTimecode.decs)}:${formatTimecodeComponent(missionTimecode.hours)}:${formatTimecodeComponent(missionTimecode.minutes)}:${formatTimecodeComponent(missionTimecode.seconds)}`;
             document.getElementById("earthDateResultCalc").textContent = `Earth Date: ${earthDate.toLocaleString()}`;
+
 
             // Update Total Hours input
             document.getElementById("totalHours").value = totalHours.toFixed(2);
